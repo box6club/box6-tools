@@ -1,5 +1,5 @@
 {
-  "name": "@box6/box6utils",
+  "name": "@box6/box6tools",
   "version": "1.0.4",
   "description": "\"# common\"",
   "main": "./dist/index.js",
@@ -8,7 +8,7 @@
   },
   "type": "module",
   "bin": {
-    "box6utils": "./dist/index.js"
+    "box6tools": "./dist/index.js"
   },
   "scripts": {
     "prepublishOnly": "tsc",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/box6club/box6utils"
+    "url": "git+https://github.com/box6club/box6tools"
   },
   "author": "William Oliveira",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/box6club/box6utils/issues"
+    "url": "https://github.com/box6club/box6tools/issues"
   },
-  "homepage": "https://github.com/box6club/box6utils#readme",
+  "homepage": "https://github.com/box6club/box6tools#readme",
   "devDependencies": {
     "@types/node": "^17.0.23",
     "typescript": "^4.6.3"
