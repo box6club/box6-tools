@@ -6,7 +6,7 @@ const { apiKey, appId, authDomain, databaseURL, messagingSenderId, projectId, st
 const [ _, __, establishmentId ] = process.argv
 
 console.log(` ------- starting box6utils with ------- `)
-console.log(`ENVIRONMENTAL VARIABLES:`)
+console.log(`:: ENVIRONMENTAL VARIABLES ::`)
 console.log(`apiKey: `, apiKey)
 console.log(`appId: `, appId)
 console.log(`authDomain: `, authDomain)
@@ -15,7 +15,7 @@ console.log(`messagingSenderId: `, messagingSenderId)
 console.log(`projectId: `, projectId)
 console.log(`storageBucket: `, storageBucket)
 console.log(``)
-console.log(`ARGUMENTS:`)
+console.log(`:: ARGUMENTS ::`)
 console.log(`$1 (establishmentId): `, establishmentId)
 console.log(` -------------------------------------- `)
 
