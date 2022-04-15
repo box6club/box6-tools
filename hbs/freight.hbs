@@ -1,0 +1,14 @@
+<div class='frete-row'>
+  <div class="frete-row__imagemDiv" style='grid-area: logo / logo / logo / logo'>
+    <img class='frete-row__imagem' src='{{this.urlImagem}}' alt='{{this.transportadora}} {{this.tipoTransporte}}' /></div>
+  <div style='grid-area: type / type / type / type;'>
+    <span class='frete-row__tipo'>{{this.tipoTransporte}}</span>
+  </div>
+  <div style='grid-area: title / title / title / title;'></div>
+  <div style='grid-area: price / price / price / price;'>
+    <span class='frete-row__valor'>{{this.preco}}</span>
+  </div>
+  <div style='grid-area: time / time / time / time;'>
+    <span class='frete-row__periodo'>Entre {{this.prazoEntrega.min}} e {{this.prazoEntrega.max}} dias</span>
+  </div>
+</div>

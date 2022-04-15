@@ -1,0 +1,52 @@
+<div class="pricing-table-inner">
+  <div class="pricing-table-main">
+    <div class="pricing-table-header">
+      <div class="pricing-table-title mt-12 mb-16 text-secondary">
+        {{this.name}}
+      </div>
+      <div class="pricing-table-price mb-24">
+        <span class="pricing-table-price-currency h3"
+          >R$</span
+        ><span class="pricing-table-price-amount h1"
+          >{{this.price}}</span
+        ><span class="pricing-table-price-delivery h1"
+          >/mês + frete</span
+        >
+        <p class="pricing-table-price-description">
+          Plano de 6 meses<br/><span class="pricing-table-price-details">(sem renovação automática)</span>
+        </p>
+      </div>
+    </div>
+    <ul
+      class="pricing-table-features list-reset text-xs mb-56"
+    >
+      {{#each this.list}}
+      <li>
+        <span class="list-icon">
+          <svg
+            width="16"
+            height="12"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14.3.3L5 9.6 1.7 6.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l4 4c.2.2.4.3.7.3.3 0 .5-.1.7-.3l10-10c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0z"
+              fill="#00C6A7"
+              fill-rule="nonzero"
+            />
+          </svg>
+        </span>
+        <span>{{this}}</span>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+  <div style="background: url(/dist/images/{{this.code}}.jpg) center/cover no-repeat" class="pricing-table-img"></div>
+  <div class="pricing-table-cta">
+    <a
+      data-type="action"
+      data-code="{{this.code}}"
+      class="button button-secondary button-block">
+      {{this.actionText}}
+    </a>
+  </div>
+</div>
