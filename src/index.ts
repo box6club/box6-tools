@@ -5,6 +5,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import fs from 'fs'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
 const argv = await yargs(hideBin(process.argv))
   .usage('Usage: $0 <establishment_id> [options]')
@@ -73,12 +74,14 @@ if (!projectId) {
     await fs.promises.mkdir(path.dirname(dataPath), { recursive: true })
     await fs.promises.writeFile(dataPath, json, 'utf8')
 
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
     await fs.promises.mkdir(partialsDir, { recursive: true })
     await Promise.all([
       'freight.hbs',
       'header_gtag.hbs',
       'pricing_section.hbs'
-    ].map(file => fs.promises.copyFile(`hbs/${file}`, path.join(partialsDir, file))))
+    ].map(file => fs.promises.copyFile(`${__dirname}/../hbs/${file}`, path.join(partialsDir, file))))
 
     console.log(`Files generated successfully!`)
     process.exit(0)
