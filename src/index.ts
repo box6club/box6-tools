@@ -76,6 +76,7 @@ if (!projectId) {
     await fs.promises.mkdir(partialsDir, { recursive: true })
     await Promise.all([
       'freight.hbs',
+      'header_gtag.hbs',
       'pricing_section.hbs'
     ].map(file => fs.promises.copyFile(`hbs/${file}`, path.join(partialsDir, file))))
 
