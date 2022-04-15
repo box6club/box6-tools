@@ -8,23 +8,16 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const argv = await yargs(hideBin(process.argv))
-  .usage('Usage: $0 <establishment_id> [options]')
-  .option('data', {
-    demandOption: true,
-    describe: 'Path to save the data file',
-    type: 'string'
+  .usage('Usage: $0 [command] [options]')
+  .command('download-data', 'download data for a specific establishment', {
+    path: { type: 'string', describe: 'Path to save the data file' },
+    establishmentId: { type: 'string', describe: 'Needed when supplied --data argument' }
   })
-  .option('partials-dir', {
-    demandOption: true,
-    describe: 'Path to the dir to save the handlebars partials files',
-    type: 'string'
+  .command('get-hbs-partials-dir', 'install hbs partials dir in the specified folder', {
+    dir: { type: 'string', describe: 'Path to the dir to save the handlebars partials files' }
   })
-  .demandCommand(1, 1, 'You need to provide an establishment id', 'You must provide only a establishment id and nothing else besides options.')
-  .demandOption(['data', 'partials-dir'])
   .argv
-const establishmentId = `${argv._[0]}`
-const dataPath = `${argv.data}`
-const partialsDir = `${argv.partialsDir}`
+const command = argv._[0]
 const { projectId, measurementId } = process.env
 
 console.log(`------- starting box6utils with -------`)
@@ -33,17 +26,31 @@ console.log(`projectId: `, projectId)
 console.log(`measurementId: `, measurementId)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
-console.log(`establishmentId: `, establishmentId)
-console.log(`--data: `, dataPath)
-console.log(`--partialsDir: `, partialsDir)
+console.log(`command: `, command)
+for (const [key, value] of Object.entries(argv)) {
+  console.log(`--${key}: `, value)
+}
 console.log(`--------------------------------------`)
 console.log(``)
 
 if (!projectId) {
   console.error(`projectId must be informed as an environmental variable!`)
+  process.exit(1)
 } else if (!measurementId) {
   console.error(`measurementId must be informed as an environmental variable!`)
+  process.exit(2)
 } else {
+  switch (command) {
+    case 'download-data': await downloadData(argv.path as string, argv.establishmentId as string)
+    case 'get-hbs-partials-dir': await getHbsPartialsDir(argv.dir as string)
+    default: {
+      console.error(`Command implementation not found!`)
+      process.exit(3)
+    }
+  }
+}
+
+async function downloadData(path0: string, establishmentId: string) {
   const app = initializeApp({ projectId })
 
   const db = getFirestore(app)
@@ -53,6 +60,7 @@ if (!projectId) {
 
   if (!snapshot.exists()) {
     console.error(`firestore document /establishments/${establishmentId} not found!`)
+    process.exit(23)
   } else {
     const { plans } = snapshot.data()
     const pricing = Object.entries<any>(plans).reduce<any>((acc, [key, value]) => [...acc, {
@@ -71,20 +79,20 @@ if (!projectId) {
     }
   
     const json = JSON.stringify(data)
-    await fs.promises.mkdir(path.dirname(dataPath), { recursive: true })
-    await fs.promises.writeFile(dataPath, json, 'utf8')
-
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    await fs.promises.mkdir(partialsDir, { recursive: true })
-    await Promise.all([
-      'freight.hbs',
-      'header_gtag.hbs',
-      'pricing_section.hbs'
-    ].map(file => fs.promises.copyFile(`${__dirname}/../hbs/${file}`, path.join(partialsDir, file))))
-
-    console.log(`Files generated successfully!`)
-    process.exit(0)
+    await fs.promises.mkdir(path.dirname(path0), { recursive: true })
+    await fs.promises.writeFile(path0, json, 'utf8')
+    console.log(`Data file generated successfully!`)
   }
 }
-process.exit(1)
+
+async function getHbsPartialsDir(dir: string) {
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = path.dirname(__filename)
+  await fs.promises.mkdir(dir, { recursive: true })
+  await Promise.all([
+    'freight.hbs',
+    'header_gtag.hbs',
+    'pricing_section.hbs'
+  ].map(file => fs.promises.copyFile(`${__dirname}/../hbs/${file}`, path.join(dir, file))))
+  console.log(`HBS files copied successfully!`)
+}
