@@ -11,19 +11,24 @@ const argv = await yargs(hideBin(process.argv))
   .usage('Usage: $0 [command] [options]')
   .command('download-data', 'download data for a specific establishment', {
     path: { type: 'string', describe: 'Path to save the data file' },
-    establishmentId: { type: 'string', describe: 'Needed when supplied --data argument' }
+    establishmentId: { type: 'string', describe: 'Establishment id' }
   })
   .command('get-hbs-partials-dir', 'install hbs partials dir in the specified folder', {
     dir: { type: 'string', describe: 'Path to the dir to save the handlebars partials files' }
   })
+  .command('get-js-dir', 'install js dir in the specified folder', {
+    dir: { type: 'string', describe: 'Path to the dir to save the js files' }
+  })
   .argv
 const command = argv._[0]
-const { projectId, measurementId } = process.env
+const { PROJECT_ID, MEASUREMENT_ID } = process.env
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 console.log(`------- starting box6utils with -------`)
 console.log(`:: ENVIRONMENTAL VARIABLES ::`)
-console.log(`projectId: `, projectId)
-console.log(`measurementId: `, measurementId)
+console.log(`PROJECT_ID: `, PROJECT_ID)
+console.log(`MEASUREMENT_ID: `, MEASUREMENT_ID)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
 console.log(`command: `, command)
@@ -33,16 +38,17 @@ for (const [key, value] of Object.entries(argv)) {
 console.log(`--------------------------------------`)
 console.log(``)
 
-if (!projectId) {
+if (!PROJECT_ID) {
   console.error(`projectId must be informed as an environmental variable!`)
   process.exit(1)
-} else if (!measurementId) {
+} else if (!MEASUREMENT_ID) {
   console.error(`measurementId must be informed as an environmental variable!`)
   process.exit(2)
 } else {
   switch (command) {
     case 'download-data': await downloadData(argv.path as string, argv.establishmentId as string)
     case 'get-hbs-partials-dir': await getHbsPartialsDir(argv.dir as string)
+    case 'get-js-dir': await getJsDir(argv.dir as string)
     default: {
       console.error(`Command implementation not found!`)
       process.exit(3)
@@ -51,7 +57,7 @@ if (!projectId) {
 }
 
 async function downloadData(path0: string, establishmentId: string) {
-  const app = initializeApp({ projectId })
+  const app = initializeApp({ projectId: PROJECT_ID })
 
   const db = getFirestore(app)
 
@@ -74,7 +80,7 @@ async function downloadData(path0: string, establishmentId: string) {
 
     const data = {
       pricing,
-      gaTag: measurementId,
+      gaTag: MEASUREMENT_ID,
       builtAt: Number(new Date())
     }
   
@@ -86,13 +92,19 @@ async function downloadData(path0: string, establishmentId: string) {
 }
 
 async function getHbsPartialsDir(dir: string) {
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
   await fs.promises.mkdir(dir, { recursive: true })
-  await Promise.all([
-    'freight.hbs',
-    'header_gtag.hbs',
-    'pricing_section.hbs'
-  ].map(file => fs.promises.copyFile(`${__dirname}/../hbs/${file}`, path.join(dir, file))))
+
+  const dirPath = `${__dirname}/dist/hbs`
+  const files = await fs.promises.readdir(dirPath)
+  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(dir, file))))
   console.log(`HBS files copied successfully!`)
+}
+
+async function getJsDir(dir: string) {
+  await fs.promises.mkdir(dir, { recursive: true })
+
+  const dirPath = `${__dirname}/dist/js`
+  const files = await fs.promises.readdir(dirPath)
+  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(dir, file))))
+  console.log(`JS files copied successfully!`)
 }
