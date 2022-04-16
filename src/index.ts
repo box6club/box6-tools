@@ -10,14 +10,14 @@ import { fileURLToPath } from 'url'
 const argv = await yargs(hideBin(process.argv))
   .usage('Usage: $0 [command] [options]')
   .command('download-data', 'download data for a specific establishment', {
-    path: { type: 'string', describe: 'Path to save the data file' },
-    establishmentId: { type: 'string', describe: 'Establishment id' }
+    path: { type: 'string', demandOption: true, describe: 'Path to save the data file' },
+    establishmentId: { type: 'string', demandOption: true, describe: 'Establishment id' }
   })
   .command('get-hbs-partials-dir', 'install hbs partials dir in the specified folder', {
-    dir: { type: 'string', describe: 'Path to the dir to save the handlebars partials files' }
+    dir: { type: 'string', demandOption: true, describe: 'Path to the dir to save the handlebars partials files' }
   })
   .command('get-js-dir', 'install js dir in the specified folder', {
-    dir: { type: 'string', describe: 'Path to the dir to save the js files' }
+    dir: { type: 'string', demandOption: true, describe: 'Path to the dir to save the js files' }
   })
   .argv
 const command = argv._[0]
