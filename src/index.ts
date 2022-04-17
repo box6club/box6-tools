@@ -13,12 +13,6 @@ const argv = await yargs(hideBin(process.argv))
     path: { type: 'string', demandOption: true, describe: 'Path to save the data file' },
     establishmentId: { type: 'string', demandOption: true, describe: 'Establishment id' }
   })
-  .command('get-hbs-partials-dir', 'install hbs partials dir in the specified folder', {
-    dir: { type: 'string', demandOption: true, describe: 'Path to the dir to save the handlebars partials files' }
-  })
-  .command('get-js-dir', 'install js dir in the specified folder', {
-    dir: { type: 'string', demandOption: true, describe: 'Path to the dir to save the js files' }
-  })
   .argv
 const command = argv._[0]
 const { PROJECT_ID, MEASUREMENT_ID } = process.env
@@ -26,9 +20,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const COMMAND_IMPLEMENTATIONS = {
-  'download-data': downloadData,
-  'get-hbs-partials-dir': getHbsPartialsDir,
-  'get-js-dir': getJsDir
+  'download-data': downloadData
 }
 
 console.log(`------- starting box6utils with -------`)
@@ -92,22 +84,4 @@ async function downloadData(input: { path: string, establishmentId: string }) {
     await fs.promises.writeFile(input.path, json, 'utf8')
     console.log(`Data file generated successfully!`)
   }
-}
-
-async function getHbsPartialsDir(input: { dir: string }) {
-  await fs.promises.mkdir(input.dir, { recursive: true })
-
-  const dirPath = `${__dirname}/../include/hbs`
-  const files = await fs.promises.readdir(dirPath)
-  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(input.dir, file))))
-  console.log(`HBS files copied successfully!`)
-}
-
-async function getJsDir(input: { dir: string }) {
-  await fs.promises.mkdir(input.dir, { recursive: true })
-
-  const dirPath = `${__dirname}/../include/js`
-  const files = await fs.promises.readdir(dirPath)
-  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(input.dir, file))))
-  console.log(`JS files copied successfully!`)
 }
