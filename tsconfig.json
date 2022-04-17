@@ -11,6 +11,6 @@
     "moduleResolution": "node",
     "outDir": "./dist"
   },
-  "include": ["src"],
+  "include": ["src", "include"],
   "exclude": ["node_modules"]
 }

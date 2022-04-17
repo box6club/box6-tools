@@ -25,13 +25,19 @@ const { PROJECT_ID, MEASUREMENT_ID } = process.env
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const COMMAND_IMPLEMENTATIONS = {
+  'download-data': downloadData,
+  'get-hbs-partials-dir': getHbsPartialsDir,
+  'get-js-dir': getJsDir
+}
+
 console.log(`------- starting box6utils with -------`)
 console.log(`:: ENVIRONMENTAL VARIABLES ::`)
 console.log(`PROJECT_ID: `, PROJECT_ID)
 console.log(`MEASUREMENT_ID: `, MEASUREMENT_ID)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
-console.log(`command: `, command)
+console.log(`command: `, `'${command}'`)
 for (const [key, value] of Object.entries(argv)) {
   console.log(`--${key}: `, value)
 }
@@ -44,28 +50,25 @@ if (!PROJECT_ID) {
 } else if (!MEASUREMENT_ID) {
   console.error(`measurementId must be informed as an environmental variable!`)
   process.exit(2)
+} else if (!(COMMAND_IMPLEMENTATIONS as any)[command]) {
+  console.error(`Command implementation not found!`)
+  process.exit(3)
 } else {
-  switch (command) {
-    case 'download-data': await downloadData(argv.path as string, argv.establishmentId as string)
-    case 'get-hbs-partials-dir': await getHbsPartialsDir(argv.dir as string)
-    case 'get-js-dir': await getJsDir(argv.dir as string)
-    default: {
-      console.error(`Command implementation not found!`)
-      process.exit(3)
-    }
-  }
+  const commandImplementation = (COMMAND_IMPLEMENTATIONS as any)[command]
+  await commandImplementation(argv)
+  process.exit(0)
 }
 
-async function downloadData(path0: string, establishmentId: string) {
+async function downloadData(input: { path: string, establishmentId: string }) {
   const app = initializeApp({ projectId: PROJECT_ID })
 
   const db = getFirestore(app)
 
-  const ref = doc(db, 'establishments', establishmentId)
+  const ref = doc(db, 'establishments', input.establishmentId)
   const snapshot = await getDoc(ref)
 
   if (!snapshot.exists()) {
-    console.error(`firestore document /establishments/${establishmentId} not found!`)
+    console.error(`firestore document /establishments/${input.establishmentId} not found!`)
     process.exit(23)
   } else {
     const { plans } = snapshot.data()
@@ -85,26 +88,26 @@ async function downloadData(path0: string, establishmentId: string) {
     }
   
     const json = JSON.stringify(data)
-    await fs.promises.mkdir(path.dirname(path0), { recursive: true })
-    await fs.promises.writeFile(path0, json, 'utf8')
+    await fs.promises.mkdir(path.dirname(input.path), { recursive: true })
+    await fs.promises.writeFile(input.path, json, 'utf8')
     console.log(`Data file generated successfully!`)
   }
 }
 
-async function getHbsPartialsDir(dir: string) {
-  await fs.promises.mkdir(dir, { recursive: true })
+async function getHbsPartialsDir(input: { dir: string }) {
+  await fs.promises.mkdir(input.dir, { recursive: true })
 
-  const dirPath = `${__dirname}/dist/hbs`
+  const dirPath = `${__dirname}/../include/hbs`
   const files = await fs.promises.readdir(dirPath)
-  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(dir, file))))
+  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(input.dir, file))))
   console.log(`HBS files copied successfully!`)
 }
 
-async function getJsDir(dir: string) {
-  await fs.promises.mkdir(dir, { recursive: true })
+async function getJsDir(input: { dir: string }) {
+  await fs.promises.mkdir(input.dir, { recursive: true })
 
-  const dirPath = `${__dirname}/dist/js`
+  const dirPath = `${__dirname}/../include/js`
   const files = await fs.promises.readdir(dirPath)
-  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(dir, file))))
+  await Promise.all(files.map(file => fs.promises.copyFile(`${dirPath}/${file}`, path.join(input.dir, file))))
   console.log(`JS files copied successfully!`)
 }

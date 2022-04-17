@@ -2,7 +2,11 @@ import { initializeApp } from 'firebase/app'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { getAnalytics, logEvent } from 'firebase/analytics'
 
-const app = initializeApp({ projectId: process.env.PROJECT_ID }) // test if there is any property missing
+const app = initializeApp({
+  projectId: process.env.PROJECT_ID,
+  apiKey: process.env.API_KEY,
+  appId: process.env.APP_ID
+})
 const functions = getFunctions(app)
 const getCEPData = httpsCallable(functions, 'getCEPData')
 const analytics = getAnalytics()
@@ -11,7 +15,7 @@ export default {
   activate
 }
 
-let _template = undefined
+let _template
 export function activate (template) {
   _template = template
   const el = document.querySelector('#cep')
