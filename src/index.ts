@@ -5,7 +5,6 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
 const argv = await yargs(hideBin(process.argv))
   .usage('Usage: $0 [command] [options]')
@@ -16,8 +15,6 @@ const argv = await yargs(hideBin(process.argv))
   .argv
 const command = argv._[0]
 const { PROJECT_ID, MEASUREMENT_ID } = process.env
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
