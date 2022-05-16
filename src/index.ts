@@ -9,12 +9,11 @@ import path from 'path'
 const argv = await yargs(hideBin(process.argv))
   .usage('Usage: $0 [command] [options]')
   .command('download-data', 'download data for a specific establishment', {
-    path: { type: 'string', demandOption: true, describe: 'Path to save the data file' },
-    establishmentId: { type: 'string', demandOption: true, describe: 'Establishment id' }
+    path: { type: 'string', demandOption: true, describe: 'Path to save the data file' }
   })
   .argv
 const command = argv._[0]
-const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID } = process.env
+const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID, ESTABLISHMENT_ID } = process.env
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
@@ -24,6 +23,7 @@ console.log(`------- starting box6utils with -------`)
 console.log(`:: ENVIRONMENTAL VARIABLES ::`)
 console.log(`FIREBASE_PROJECT_ID: `, FIREBASE_PROJECT_ID)
 console.log(`FIREBASE_MEASUREMENT_ID: `, FIREBASE_MEASUREMENT_ID)
+console.log(`ESTABLISHMENTE_ID: `, ESTABLISHMENT_ID)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
 console.log(`command: `, `'${command}'`)
@@ -39,25 +39,28 @@ if (!FIREBASE_PROJECT_ID) {
 } else if (!FIREBASE_MEASUREMENT_ID) {
   console.error(`measurementId must be informed as an environmental variable!`)
   process.exit(2)
+} else if (!ESTABLISHMENT_ID) {
+  console.error(`establishmentId must be informed as an environmental variable!`)
+  process.exit(3)
 } else if (!(COMMAND_IMPLEMENTATIONS as any)[command]) {
   console.error(`Command implementation not found!`)
-  process.exit(3)
+  process.exit(4)
 } else {
   const commandImplementation = (COMMAND_IMPLEMENTATIONS as any)[command]
   await commandImplementation(argv)
   process.exit(0)
 }
 
-async function downloadData(input: { path: string, establishmentId: string }) {
+async function downloadData(input: { path: string }) {
   const app = initializeApp({ projectId: FIREBASE_PROJECT_ID })
 
   const db = getFirestore(app)
 
-  const ref = doc(db, 'establishments', input.establishmentId)
+  const ref = doc(db, 'establishments', ESTABLISHMENT_ID!)
   const snapshot = await getDoc(ref)
 
   if (!snapshot.exists()) {
-    console.error(`firestore document /establishments/${input.establishmentId} not found!`)
+    console.error(`firestore document /establishments/${ESTABLISHMENT_ID} not found!`)
     process.exit(23)
   } else {
     const { plans } = snapshot.data()

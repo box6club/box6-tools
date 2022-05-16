@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app'
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions'
 import { getAnalytics, logEvent } from 'firebase/analytics'
 import defaultTemplate from '../hbs/partials/freight.hbs'
-import { debug } from 'console'
 
 const app = initializeApp({
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -13,9 +12,9 @@ const functions = getFunctions(app)
 const getCEPData = httpsCallable(functions, 'getCEPData')
 const analytics = getAnalytics()
 
-if (process.env.FIREBASE_LOCAL_HOST && config.FIREBASE_FIRESTORE_EMULATOR_PORT) {
-  debug.log('Connected to local Functions')
-  connectFunctionsEmulator(functions, config.FIREBASE_LOCAL_HOST, +config.FIREBASE_FIRESTORE_EMULATOR_PORT)
+if (process.env.FIREBASE_LOCAL_HOST && process.env.FIREBASE_FIRESTORE_EMULATOR_PORT) {
+  console.log('Connected to local Functions')
+  connectFunctionsEmulator(functions, process.env.FIREBASE_LOCAL_HOST, +process.env.FIREBASE_FIRESTORE_EMULATOR_PORT)
 }
 
 export default {
@@ -67,7 +66,7 @@ async function handleInputChange (e) {
   if (cep.length === 8) {
     if (cache[cep] === undefined) {
       setContainerChildren(undefined, true)
-      cache[cep] = getCEPData({ cep: e.target.value })
+      cache[cep] = getCEPData({ cep: e.target.value, establishmentId: process.env.ESTABLISHMENT_ID })
     }
     try {
       const result = await cache[cep]
