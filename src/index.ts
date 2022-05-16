@@ -14,7 +14,7 @@ const argv = await yargs(hideBin(process.argv))
   })
   .argv
 const command = argv._[0]
-const { PROJECT_ID, MEASUREMENT_ID } = process.env
+const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID } = process.env
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
@@ -22,8 +22,8 @@ const COMMAND_IMPLEMENTATIONS = {
 
 console.log(`------- starting box6utils with -------`)
 console.log(`:: ENVIRONMENTAL VARIABLES ::`)
-console.log(`PROJECT_ID: `, PROJECT_ID)
-console.log(`MEASUREMENT_ID: `, MEASUREMENT_ID)
+console.log(`FIREBASE_PROJECT_ID: `, FIREBASE_PROJECT_ID)
+console.log(`FIREBASE_MEASUREMENT_ID: `, FIREBASE_MEASUREMENT_ID)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
 console.log(`command: `, `'${command}'`)
@@ -33,10 +33,10 @@ for (const [key, value] of Object.entries(argv)) {
 console.log(`--------------------------------------`)
 console.log(``)
 
-if (!PROJECT_ID) {
+if (!FIREBASE_PROJECT_ID) {
   console.error(`projectId must be informed as an environmental variable!`)
   process.exit(1)
-} else if (!MEASUREMENT_ID) {
+} else if (!FIREBASE_MEASUREMENT_ID) {
   console.error(`measurementId must be informed as an environmental variable!`)
   process.exit(2)
 } else if (!(COMMAND_IMPLEMENTATIONS as any)[command]) {
@@ -49,7 +49,7 @@ if (!PROJECT_ID) {
 }
 
 async function downloadData(input: { path: string, establishmentId: string }) {
-  const app = initializeApp({ projectId: PROJECT_ID })
+  const app = initializeApp({ projectId: FIREBASE_PROJECT_ID })
 
   const db = getFirestore(app)
 
@@ -72,10 +72,10 @@ async function downloadData(input: { path: string, establishmentId: string }) {
 
     const data = {
       pricing,
-      gaTag: MEASUREMENT_ID,
+      gaTag: FIREBASE_MEASUREMENT_ID,
       builtAt: Number(new Date())
     }
-  
+
     const json = JSON.stringify(data)
     await fs.promises.mkdir(path.dirname(input.path), { recursive: true })
     await fs.promises.writeFile(input.path, json, 'utf8')
