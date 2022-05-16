@@ -1,11 +1,12 @@
 import { initializeApp } from 'firebase/app'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { getAnalytics, logEvent } from 'firebase/analytics'
+import defaultTemplate from '../hbs/partials/freight.hbs'
 
 const app = initializeApp({
-  projectId: process.env.PROJECT_ID,
-  apiKey: process.env.API_KEY,
-  appId: process.env.APP_ID
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  apiKey: process.env.FIREBASE_API_KEY,
+  appId: process.env.FIREBASE_APP_ID
 })
 const functions = getFunctions(app)
 const getCEPData = httpsCallable(functions, 'getCEPData')
@@ -17,7 +18,7 @@ export default {
 
 let _template
 export function activate (template) {
-  _template = template
+  _template = template ?? defaultTemplate
   const el = document.querySelector('#cep')
   el.addEventListener('keyup', handleInputChange)
   el.addEventListener('paste', handleInputChange)
