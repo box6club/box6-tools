@@ -76,7 +76,8 @@ async function downloadData(input: { path: string }) {
     const data = {
       pricing,
       gaTag: FIREBASE_MEASUREMENT_ID,
-      builtAt: Number(new Date())
+      builtAt: Number(new Date()),
+      establishmentId: ESTABLISHMENT_ID
     }
 
     const json = JSON.stringify(data)
