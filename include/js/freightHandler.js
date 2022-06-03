@@ -3,18 +3,25 @@ import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/
 import { getAnalytics, logEvent } from 'firebase/analytics'
 import defaultTemplate from '../hbs/partials/freight.hbs'
 
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY
+const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID
+const FIREBASE_LOCAL_HOST = process.env.FIREBASE_LOCAL_HOST
+const FIREBASE_FIRESTORE_EMULATOR_PORT = process.env.FIREBASE_FIRESTORE_EMULATOR_PORT
+const ESTABLISHMENT_ID = process.env.ESTABLISHMENT_ID
+
 const app = initializeApp({
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  apiKey: process.env.FIREBASE_API_KEY,
-  appId: process.env.FIREBASE_APP_ID
+  projectId: FIREBASE_PROJECT_ID,
+  apiKey: FIREBASE_API_KEY,
+  appId: FIREBASE_APP_ID
 })
 const functions = getFunctions(app)
 const getCEPData = httpsCallable(functions, 'getCEPData')
 const analytics = getAnalytics()
 
-if (process.env.FIREBASE_LOCAL_HOST && process.env.FIREBASE_FIRESTORE_EMULATOR_PORT) {
+if (FIREBASE_LOCAL_HOST && FIREBASE_FIRESTORE_EMULATOR_PORT) {
   console.log('Connected to local Functions')
-  connectFunctionsEmulator(functions, process.env.FIREBASE_LOCAL_HOST, +process.env.FIREBASE_FIRESTORE_EMULATOR_PORT)
+  connectFunctionsEmulator(functions, FIREBASE_LOCAL_HOST, +FIREBASE_FIRESTORE_EMULATOR_PORT)
 }
 
 export default {
@@ -66,7 +73,7 @@ async function handleInputChange (e) {
   if (cep.length === 8) {
     if (cache[cep] === undefined) {
       setContainerChildren(undefined, true)
-      cache[cep] = getCEPData({ cep: e.target.value, establishmentId: process.env.ESTABLISHMENT_ID })
+      cache[cep] = getCEPData({ cep: e.target.value, establishmentId: ESTABLISHMENT_ID })
     }
     try {
       const result = await cache[cep]

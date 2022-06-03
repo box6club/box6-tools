@@ -13,7 +13,7 @@ const argv = await yargs(hideBin(process.argv))
   })
   .argv
 const command = argv._[0]
-const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID, ESTABLISHMENT_ID } = process.env
+const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID, ESTABLISHMENT_ID, PROTOCOLO, PORT } = process.env
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
@@ -77,7 +77,9 @@ async function downloadData(input: { path: string }) {
       pricing,
       gaTag: FIREBASE_MEASUREMENT_ID,
       builtAt: Number(new Date()),
-      establishmentId: ESTABLISHMENT_ID
+      establishmentId: ESTABLISHMENT_ID,
+      protocolo: PROTOCOLO,
+      port: PORT
     }
 
     const json = JSON.stringify(data)
