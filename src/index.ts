@@ -13,7 +13,7 @@ const argv = await yargs(hideBin(process.argv))
   })
   .argv
 const command = argv._[0]
-const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID, ESTABLISHMENT_ID, PROTOCOLO, PORT } = process.env
+const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID, ESTABLISHMENT_ID, PROTOCOLO, PORTA } = process.env
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
@@ -25,7 +25,7 @@ console.log(`FIREBASE_PROJECT_ID: `, FIREBASE_PROJECT_ID)
 console.log(`FIREBASE_MEASUREMENT_ID: `, FIREBASE_MEASUREMENT_ID)
 console.log(`ESTABLISHMENTE_ID: `, ESTABLISHMENT_ID)
 console.log(`PROTOCOLO: `, PROTOCOLO)
-console.log(`PORT: `, PORT)
+console.log(`PORTA: `, PORTA)
 console.log(``)
 console.log(`:: ARGUMENTS ::`)
 console.log(`command: `, `'${command}'`)
@@ -81,7 +81,7 @@ async function downloadData(input: { path: string }) {
       builtAt: Number(new Date()),
       establishmentId: ESTABLISHMENT_ID,
       protocolo: PROTOCOLO,
-      port: PORT
+      port: PORTA
     }
 
     const json = JSON.stringify(data)
