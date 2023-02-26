@@ -6,6 +6,7 @@ import defaultTemplate from '../hbs/partials/freight.hbs'
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY
 const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID
+const FIREBASE_REGION = process.env.FIREBASE_REGION
 const FIREBASE_LOCAL_HOST = process.env.FIREBASE_LOCAL_HOST
 const FIREBASE_FIRESTORE_EMULATOR_PORT = process.env.FIREBASE_FIRESTORE_EMULATOR_PORT
 const ESTABLISHMENT_ID = process.env.ESTABLISHMENT_ID
@@ -15,8 +16,8 @@ const app = initializeApp({
   apiKey: FIREBASE_API_KEY,
   appId: FIREBASE_APP_ID
 })
-const functions = getFunctions(app)
-const getCEPData = httpsCallable(functions, 'getCEPData')
+const functions = getFunctions(app, FIREBASE_REGION)
+const getZIPData = httpsCallable(functions, 'getZIPData')
 const analytics = getAnalytics()
 
 if (FIREBASE_LOCAL_HOST && FIREBASE_FIRESTORE_EMULATOR_PORT) {
@@ -73,7 +74,7 @@ async function handleInputChange (e) {
   if (cep.length === 8) {
     if (cache[cep] === undefined) {
       setContainerChildren(undefined, true)
-      cache[cep] = getCEPData({ cep: e.target.value, establishmentId: ESTABLISHMENT_ID })
+      cache[cep] = getZIPData({ cep: e.target.value, establishmentId: ESTABLISHMENT_ID })
     }
     try {
       const result = await cache[cep]
