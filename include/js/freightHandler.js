@@ -74,7 +74,7 @@ async function handleInputChange (e) {
   if (cep.length === 8) {
     if (cache[cep] === undefined) {
       setContainerChildren(undefined, true)
-      cache[cep] = getZIPData({ cep: e.target.value, establishmentId: ESTABLISHMENT_ID })
+      cache[cep] = getZIPData({ zip: e.target.value, establishmentId: ESTABLISHMENT_ID })
     }
     try {
       const result = await cache[cep]
