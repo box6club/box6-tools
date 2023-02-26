@@ -79,7 +79,7 @@ async function handleInputChange (e) {
     try {
       const result = await cache[cep]
       const { data } = result.data
-      const rows = data.fretes.map(row => ({ ...row, preco: 'R$ ' + row.preco.toString().replace('.', ',') }))
+      const rows = data.freights.map(row => ({ ...row, price: 'R$ ' + row.price.toString().replace('.', ',') }))
       setContainerChildren(rows, false)
       if (!eventLogged) {
         eventLogged = true
