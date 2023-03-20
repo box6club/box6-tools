@@ -13,7 +13,7 @@ const argv = await yargs(hideBin(process.argv))
   })
   .argv
 const command = argv._[0]
-const { FIREBASE_PROJECT_ID, FIREBASE_MEASUREMENT_ID_PAGE, ESTABLISHMENT_ID, PROTOCOLO, PORTA } = process.env
+const { FIREBASE_PROJECT_ID, MEASUREMENT_ID_PAGE, ESTABLISHMENT_ID, PROTOCOLO, PORTA } = process.env
 
 const COMMAND_IMPLEMENTATIONS = {
   'download-data': downloadData
@@ -22,7 +22,7 @@ const COMMAND_IMPLEMENTATIONS = {
 console.log(`------- starting box6utils with -------`)
 console.log(`:: ENVIRONMENTAL VARIABLES ::`)
 console.log(`FIREBASE_PROJECT_ID: `, FIREBASE_PROJECT_ID)
-console.log(`FIREBASE_MEASUREMENT_ID_PAGE: `, FIREBASE_MEASUREMENT_ID_PAGE)
+console.log(`MEASUREMENT_ID_PAGE: `, MEASUREMENT_ID_PAGE)
 console.log(`ESTABLISHMENTE_ID: `, ESTABLISHMENT_ID)
 console.log(`PROTOCOLO: `, PROTOCOLO)
 console.log(`PORTA: `, PORTA)
@@ -38,7 +38,7 @@ console.log(``)
 if (!FIREBASE_PROJECT_ID) {
   console.error(`projectId must be informed as an environmental variable!`)
   process.exit(1)
-} else if (!FIREBASE_MEASUREMENT_ID_PAGE) {
+} else if (!MEASUREMENT_ID_PAGE) {
   console.error(`measurementIdPage must be informed as an environmental variable!`)
   process.exit(2)
 } else if (!ESTABLISHMENT_ID) {
@@ -77,7 +77,7 @@ async function downloadData(input: { path: string }) {
 
     const data = {
       pricing,
-      gaTag: FIREBASE_MEASUREMENT_ID_PAGE,
+      gaTag: MEASUREMENT_ID_PAGE,
       builtAt: Number(new Date()),
       establishmentId: ESTABLISHMENT_ID,
       protocolo: PROTOCOLO,
